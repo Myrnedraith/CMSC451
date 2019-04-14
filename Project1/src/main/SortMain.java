@@ -5,8 +5,8 @@ public class SortMain {
 			1000, 5000, 10000, 50000};
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		BenchmarkSorts benchmarker = new BenchmarkSorts(LENGTHS);
+		benchmarker.runSorts();
 	}
 
 }
