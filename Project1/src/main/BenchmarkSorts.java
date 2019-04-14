@@ -16,11 +16,11 @@ public class BenchmarkSorts {
 		int size;
 		int runs;
 		long totalTime;
-		int totalOps;
+		long totalOps;
 		String type;
 		
 		ArrayList<Long> times;
-		ArrayList<Integer> ops;
+		ArrayList<Long> ops;
 		
 		Benchmark(int size, String type) {
 			this.size = size;
@@ -31,11 +31,12 @@ public class BenchmarkSorts {
 			totalOps = 0;
 			
 			times = new ArrayList<Long>();
+			ops = new ArrayList<Long>();
 		}
 		
 		public void runBenchmark(int[] set) throws UnsortedException {
 			long time;
-			int op;
+			long op;
 			
 			
 			if (type.equals("Iterative")) {
@@ -67,7 +68,7 @@ public class BenchmarkSorts {
 			return totalTime/runs;
 		}
 		
-		public int averageOps() {
+		public long averageOps() {
 			return totalOps/runs;
 		}
 		
@@ -90,13 +91,19 @@ public class BenchmarkSorts {
 			double dev;
 			double mean = averageOps();
 			
-			for (int op : ops) {
+			for (long op : ops) {
 				sqrSum += Math.pow(mean - op, 2);
 			}
 			
 			dev = Math.sqrt(sqrSum / (runs - 1));
 			
 			return dev/mean;
+		}
+		
+		public String toString() {
+			return "Type: " + type + " Size: " + size +
+					"\nAverage Ops: " + averageOps() + " Variance of Count: " + varOps() +
+					"\nAverage Time: " + averageTime() + " Variance of Time: " + varTime();
 		}
 	}
 	
@@ -116,7 +123,7 @@ public class BenchmarkSorts {
 		
 		for (int i = 0; i < sizes.length; i++) {
 			Benchmark iterative = iBenchmarks.get(i);
-			Benchmark recursive = rBenchmarks.get(i);
+			//Benchmark recursive = rBenchmarks.get(i);
 			
 			for (int j = 0; j < SETS_PER_SIZE; j++) {
 				testSet = new int[sizes[i]];
@@ -126,8 +133,8 @@ public class BenchmarkSorts {
 				}
 				
 				try {
-					recursive.runBenchmark(testSet);
-					iterative.runBenchmark(testSet);
+					//recursive.runBenchmark(testSet);
+					iterative.runBenchmark(Arrays.copyOf(testSet, testSet.length));
 				}
 				catch (UnsortedException ue) {
 					System.out.println(ue.getMessage());
@@ -139,6 +146,8 @@ public class BenchmarkSorts {
 	}
 	
 	public void displayReport() {
-		
+		for (Benchmark b:iBenchmarks) {
+			System.out.println(b.toString());
+		}
 	}
 }
