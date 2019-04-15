@@ -11,11 +11,55 @@ public class SelectionSort implements SortInterface {
 		startTime = 0;
 		endTime = 0;
 	}
-	
-	@Override
-	public int[] recursiveSort(int[] list) {
-		return null;
-	}
+    
+    //Initiates the recursive selection sort.
+    public int[] recursiveSort(int a[]) {
+    	count = 0;
+    	startTime = System.nanoTime();
+    	a = recursiveSort(a, a.length, 0);
+    	endTime = System.nanoTime();
+    	
+    	return a;
+    }
+    
+    // Recursive algorithm pulled from https://www.geeksforgeeks.org/recursive-selection-sort/
+    
+    // Recursive selection sort. n is size of a[] and index 
+    // is index of starting element. 
+    private int[] recursiveSort(int a[], int n, int index) 
+    { 
+           
+        // Return when starting and size are same 
+        if (index == n) 
+           return a; 
+       
+        // calling minimum index function for minimum index 
+        int k = minIndex(a, index, n-1); 
+       
+        // Swapping when index and minimum index are not same 
+        if (k != index){ 
+           // swap 
+           int temp = a[k]; 
+           a[k] = a[index]; 
+           a[index] = temp; 
+        } 
+        // Recursively calling selection sort function 
+        return recursiveSort(a, n, index + 1); 
+    }
+    
+    // Return minimum index 
+    int minIndex(int a[], int i, int j) 
+    { 
+    	count++;
+        if (i == j) 
+            return i; 
+       
+        // Find minimum of remaining elements 
+        int k = minIndex(a, i + 1, j); 
+       
+        // Return minimum of current and remaining. 
+        return (a[i] < a[k])? i : k; 
+    } 
 
 	@Override
 	//Iterative algorithm pulled from https://www.geeksforgeeks.org/selection-sort/

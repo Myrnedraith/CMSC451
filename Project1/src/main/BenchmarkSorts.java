@@ -1,6 +1,5 @@
 package main;
 
-import java.math.*;
 import java.util.*;
 
 public class BenchmarkSorts {
@@ -123,7 +122,7 @@ public class BenchmarkSorts {
 		
 		for (int i = 0; i < sizes.length; i++) {
 			Benchmark iterative = iBenchmarks.get(i);
-			//Benchmark recursive = rBenchmarks.get(i);
+			Benchmark recursive = rBenchmarks.get(i);
 			
 			for (int j = 0; j < SETS_PER_SIZE; j++) {
 				testSet = new int[sizes[i]];
@@ -133,7 +132,7 @@ public class BenchmarkSorts {
 				}
 				
 				try {
-					//recursive.runBenchmark(testSet);
+					recursive.runBenchmark(Arrays.copyOf(testSet, testSet.length));
 					iterative.runBenchmark(Arrays.copyOf(testSet, testSet.length));
 				}
 				catch (UnsortedException ue) {
@@ -146,8 +145,9 @@ public class BenchmarkSorts {
 	}
 	
 	public void displayReport() {
-		for (Benchmark b:iBenchmarks) {
-			System.out.println(b.toString());
+		for (int i = 0; i < sizes.length; i++) {
+			System.out.println(iBenchmarks.get(i).toString());
+			System.out.println(rBenchmarks.get(i).toString());
 		}
 	}
 }
