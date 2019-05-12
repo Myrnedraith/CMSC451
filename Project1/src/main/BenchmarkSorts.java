@@ -1,9 +1,18 @@
 package main;
 
+import java.awt.*;
 import java.util.*;
+import javax.swing.*;
 
 public class BenchmarkSorts {
 	private static final int SETS_PER_SIZE = 50;
+	private static final int WARMUP = 10000;
+	private static final String[] CATEGORIES = 
+		{"Average Critical Operation Count",
+				"Coefficient of Variance of Count",
+				"Average Execution Time",
+				"Coefficient of Variance of Time"
+	};
 	
 	private ArrayList<Benchmark> iBenchmarks = new ArrayList<Benchmark>();
 	private ArrayList<Benchmark> rBenchmarks = new ArrayList<Benchmark>();
@@ -67,7 +76,7 @@ public class BenchmarkSorts {
 			return totalTime/runs;
 		}
 		
-		public long averageOps() {
+		public double averageOps() {
 			return totalOps/runs;
 		}
 		
@@ -110,6 +119,12 @@ public class BenchmarkSorts {
 	public BenchmarkSorts(int[] sizes) {
 		this.sizes = sizes;
 		
+		try {
+			warmup();
+		} catch (UnsortedException ue) {
+			System.out.println(ue.getMessage());
+		}
+		
 		for(int i = 0; i < sizes.length; i++) {
 			rBenchmarks.add(new Benchmark(sizes[i], "Recursive"));
 			iBenchmarks.add(new Benchmark(sizes[i], "Iterative"));
@@ -145,9 +160,82 @@ public class BenchmarkSorts {
 	}
 	
 	public void displayReport() {
-		for (int i = 0; i < sizes.length; i++) {
-			System.out.println(iBenchmarks.get(i).toString());
-			System.out.println(rBenchmarks.get(i).toString());
+		JFrame frame = new JFrame("Benchmark Table");
+		frame.setSize(1366, 768);
+		
+		JPanel pane = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
+		frame.setContentPane(pane);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.CENTER;
+		c.weightx = 1;
+		c.gridx = 0;
+		c.gridy = 0;
+		
+		pane.add(new JLabel("Data Set Size n"), c);
+		
+		c.gridwidth = 4;
+		c.gridx++;
+		
+		pane.add(new JLabel("Iterative"), c);
+		
+		c.gridx = 5;
+		
+		
+		pane.add(new JLabel("Recursive"), c);
+		
+		c.gridx = 0;
+		c.gridy++;
+		c.gridwidth = 1;
+		
+		pane.add(new JLabel(""), c);
+		
+		c.gridx++;
+		
+		for(int x = 0; x <= 1; x++) {
+			for(int i = 0; i < CATEGORIES.length; i++) {
+				pane.add(new JLabel(CATEGORIES[i]), c);
+				c.gridx++;
+			}
+		}
+		
+		for(int i = 0; i < sizes.length; i++) {
+			c.gridx = 0;
+			c.gridy++;
+			pane.add(new JLabel(Integer.toString(sizes[i])), c);
+			c.gridx++;
+			pane.add(new JLabel(Double.toString(iBenchmarks.get(i).averageOps())), c);
+			c.gridx++;
+			pane.add(new JLabel(Double.toString(iBenchmarks.get(i).varOps())), c);
+			c.gridx++;
+			pane.add(new JLabel(Double.toString(iBenchmarks.get(i).averageTime())), c);
+			c.gridx++;
+			pane.add(new JLabel(Double.toString(iBenchmarks.get(i).varTime())), c);
+			c.gridx++;
+			pane.add(new JLabel(Double.toString(rBenchmarks.get(i).averageOps())), c);
+			c.gridx++;
+			pane.add(new JLabel(Double.toString(rBenchmarks.get(i).varOps())), c);
+			c.gridx++;
+			pane.add(new JLabel(Double.toString(rBenchmarks.get(i).averageTime())), c);
+			c.gridx++;
+			pane.add(new JLabel(Double.toString(rBenchmarks.get(i).varTime())), c);
+		}
+		
+		frame.setVisible(true);
+		
+	}
+	
+	private void warmup() throws UnsortedException {
+		Benchmark iB = new Benchmark(5, "Iterative");
+		Benchmark rB = new Benchmark(5, "Recursive");
+		
+		int[] dummySet = {3, 6, 2, 10, 3, 7};
+		for (int i = 0; i < WARMUP; i++) {
+			iB.runBenchmark(Arrays.copyOf(dummySet, dummySet.length));
+			rB.runBenchmark(Arrays.copyOf(dummySet, dummySet.length));
 		}
 	}
 }
